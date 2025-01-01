@@ -54,3 +54,27 @@ playground.xcworkspace
 *.swo
 *~.nib
 
+# Django
+*.pyc
+__pycache__/
+db.sqlite3
+.env
+
+# Docker
+*.dockerignore
+docker-compose.override.yml
+
+# Terraform
+*.tfstate
+*.tfstate.backup
+.terraform/
+
+# Logs and caches
+*.log
+*.swp
+*.swo
+
+# General
+*.bak
+*.tmp
+storyTime/

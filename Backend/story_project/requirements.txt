@@ -1,0 +1,8 @@
+django
+djangorestframework
+boto3
+botocore
+python-dotenv
+openai
+django-cors-headers
+gunicorn

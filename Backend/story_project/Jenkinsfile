@@ -1,0 +1,123 @@
+pipeline {
+    agent any
+
+    environment {
+        // AWS Credentials
+        AWS_ACCESS_KEY_ID = credentials('aws_credentials').AWS_ACCESS_KEY_ID
+        AWS_SECRET_ACCESS_KEY = credentials('aws_credentials').AWS_SECRET_ACCESS_KEY
+        AWS_REGION = credentials('aws_credentials').AWS_REGION
+
+        // Sensitive Information from Jenkins Credentials
+        AWS_ACCOUNT_ID = credentials('aws_account_id')
+        ECS_CLUSTER_NAME = credentials('ecs_cluster_name')
+        ECS_SERVICE_NAME = credentials('ecs_service_name')
+
+        // OpenAI API Key
+        OPENAI_API_KEY = credentials('openai_api_key')
+
+        // Additional environment variables
+        S3_BUCKET_NAME = credentials('s3_bucket_name')
+        SAGEMAKER_ENDPOINT_NAME = credentials('sagemaker_endpoint_name')
+
+        // Docker Image Name
+        DOCKER_IMAGE_NAME = "story-django-app"
+    }
+
+    stages {
+        stage('Checkout Code') {
+            steps {
+                script {
+                    echo 'Checking out code...'
+                    git branch: 'main', url: 'https://github.com/yourusername/yourrepo.git'
+                }
+            }
+        }
+
+        stage('Install Dependencies') {
+            steps {
+                script {
+                    echo 'Installing Python dependencies...'
+                    sh '''
+                        python3 -m venv venv
+                        . venv/bin/activate
+                        pip install -r requirements.txt
+                    '''
+                }
+            }
+        }
+
+        stage('Build Docker Image') {
+            steps {
+                script {
+                    echo 'Building Docker image...'
+                    dockerImage = docker.build("${DOCKER_IMAGE_NAME}:${env.BUILD_NUMBER}")
+                }
+            }
+        }
+
+        stage('Run Tests') {
+            steps {
+                script {
+                    echo 'Running tests...'
+                    sh '''
+                        . venv/bin/activate
+                        python manage.py test
+                    '''
+                }
+            }
+        }
+
+        stage('Push Docker Image') {
+            steps {
+                script {
+                    echo 'Pushing Docker image to ECR...'
+                    sh '''
+                        $(aws ecr get-login-password --region ${AWS_REGION} | docker login --username AWS --password-stdin ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com)
+                        docker tag ${DOCKER_IMAGE_NAME}:${env.BUILD_NUMBER} ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${DOCKER_IMAGE_NAME}:${env.BUILD_NUMBER}
+                        docker push ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/${DOCKER_IMAGE_NAME}:${env.BUILD_NUMBER}
+                    '''
+                }
+            }
+        }
+
+        stage('Deploy to ECS') {
+            steps {
+                script {
+                    echo 'Deploying to AWS ECS...'
+                    sh '''
+                        aws ecs update-service --cluster ${ECS_CLUSTER_NAME} \
+                            --service ${ECS_SERVICE_NAME} \
+                            --force-new-deployment \
+                            --region ${AWS_REGION}
+                    '''
+                }
+            }
+        }
+
+        stage('Cleanup') {
+            steps {
+                script {
+                    echo 'Cleaning up resources...'
+                    sh '''
+                        docker rmi ${DOCKER_IMAGE_NAME}:${env.BUILD_NUMBER}
+                        rm -rf venv
+                    '''
+                }
+            }
+        }
+    }
+
+    post {
+        success {
+            echo 'Pipeline completed successfully.'
+        }
+        failure {
+            echo 'Pipeline failed.'
+        }
+        always {
+            script {
+                echo 'Pipeline execution complete.'
+            }
+        }
+    }
+}
