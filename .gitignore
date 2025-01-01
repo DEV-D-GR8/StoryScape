@@ -1,0 +1,56 @@
+# macOS Files
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Xcode
+xcuserdata/
+*.xcworkspace
+DerivedData/
+build/
+
+# Swift Package Manager
+.swiftpm/
+Package.resolved
+.build/
+
+# Cocoapods
+Pods/
+podfile.lock
+
+# Carthage
+Carthage/Checkouts
+Carthage/Build
+
+# Fastlane
+fastlane/report.xml
+fastlane/Preview.html
+fastlane/screenshots
+fastlane/test_output
+
+# Archives
+*.xcarchive
+
+# Miscellaneous
+*.moved-aside
+*.pbxuser
+*.mode1v3
+*.mode2v3
+*.perspectivev3
+*.hmap
+*.ipa
+*.dSYM.zip
+*.dSYM
+
+# Playgrounds
+timeline.xctimeline
+playground.xcworkspace
+
+# SwiftPM
+.build/
+
+# User-specific files
+*.swp
+*.swo
+*~.nib
+
