@@ -56,7 +56,7 @@
 ### 7. **Response Language**
 - Supported languages for story generation:
   - **Hindi** (via fine-tuned LLaMA 3.2 3B Instruct LLM).
-  - **English** (via GPT-4).
+  - **English** (via GPT-4o).
 
 ### 8. **Age Group Selection**
 - Users can select an age group for the target audience from a predefined list.
@@ -225,7 +225,7 @@
 ---
 
 ## YouTube Demo
-Watch a video demonstration of **StoryScape** [here (soon)](#).
+Watch a video demonstration of **StoryScape** [here](https://youtu.be/OG8R0nyJ7Q4?si=6apINnnzYBtojsf7).
 
 ---
 
@@ -235,5 +235,5 @@ This project is licensed under the MIT License. See the `LICENSE` file for more 
 ---
 
 ## Contact
-If you have any questions or suggestions, feel free to create an issue or reach out via [devchopralinkedin@gmail.com].
+If you have any questions or suggestions, feel free to create an issue or reach out via devchopralinkedin@gmail.com.
 
